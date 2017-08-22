@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>密码强度</title>
+    <link rel="stylesheet" type="text/css" href="../css/reset.css" />
+    <style type="text/css">
+    .wrap{
+        position:relative;
+        width:400px;
+        height:200px;
+        margin:300px auto;
+    }
+    .password img{
+        width:400px;
+        height:30px;
+        margin:20px auto;
+    }
+    #boxgreen{
+        position:absolute;
+        background:green;
+        /*width:117px;*/
+        height:16px;
+        top:48px;
+        left: 16px;
+        border-radius:20px 0 0 20px;
+    }
+    #boxyellow{
+        position:absolute;
+        background:yellow;
+        /*width:80px;*/
+        height:16px;
+        top:48px;
+        left: 140px;
+    }
+    #boxred{
+        position:absolute;
+        background:red;
+        /*width:80px;*/
+        height:16px;
+        top:48px;
+        left: 272px;
+        border-radius: 0 20px 20px 0;
+    }
+    </style>
+</head>
+<body>
+  <div class="wrap">
+    <form action="" >
+      <div class="password">
+            <label for="pasword">
+                <em></em>
+                <span>输入密码：</span>
+            </label>
+            <input type="password" placeholder="请输入密码" id="password">
+            <img src="../image/1.png" alt=""  id="img" />
+        </div>  
+    </form>
+    <div id="boxgreen"></div>
+    <div id="boxyellow"></div>
+    <div id="boxred"></div>
+  </div>
+  <script type="text/javascript">
+  var password=document.getElementById("password");
+  var img=document.getElementById("img");
+  var boxgreen = document.getElementById("boxgreen");
+  var boxyellow = document.getElementById("boxyellow");
+  var boxred = document.getElementById("boxred");
+  var timer1 = null;
+  var timer2 = null;
+  password.onfocus = function(){
+    boxgreen.style.width = 0;
+    boxyellow.style.width = 0;
+    boxred.style.width = 0;
+    password.value="";
+  }
+   password.onblur=function(){
+        var passText=password.value;
+        var reg = new RegExp(/^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g"/);
+        if(reg.test(passText)){
+            sport(boxgreen,{width:117},20);
+        }else{
+            sport(boxgreen,{width:117},20);
+            timer1 = setTimeout(function(){
+                sport(boxyellow,{width:125},20);
+            }, 1500);
+            timer2 = setTimeout(function(){
+                sport(boxred,{width:117},20);
+            }, 3000);
+        }
+    }
+    function sport(ele, json, step, fn) {
+        // 清除计时器
+        clearInterval(ele.timer);
+        ele.timer = setInterval(function() {
+            // 所有的属性只有全部达到目标值时才允许清除计时器
+            var timerjudge = true;
+            for(var prop in json) {
+                if(prop == "opacity") {
+                    var startVal = parseInt(getStyle(ele, prop) * 100);
+                    console.log(json[prop]);
+                } else {
+                    var startVal = parseInt(getStyle(ele, prop));
+                }
+                var distance = Math.abs(json[prop] - startVal);
+                speed = Math.ceil(distance / step);
+                // 双方向运动判断
+                if(startVal < json[prop]) {
+                    startVal += speed;
+                } else {
+                    startVal -= speed;
+                }
+                // 自动贴合功能
+                if(distance < 10) {
+                    startVal = json[prop];
+                }
+                // 只要任何一个属性没有达到终点，timerjudge为false
+                if(startVal != json[prop]) {
+                    timerjudge = false;
+                }
+                if(prop == "opacity") {
+                    ele.style[prop] = startVal / 100;
+                    ele.style["filter"] = "alpha(opacity=" + startVal + ")";
+                } else {
+                    ele.style[prop] = startVal + "px";
+                }
+            }
+            // 所有属性全部到达清除计时器
+            if(timerjudge) {
+                clearInterval(ele.timer);
+                // 实现回调功能
+                if(fn) {
+                    fn();
+                }
+            }
+        }, 30);
+    }
+   //做一次修改
+    /* 
+     * 功能：获取渲染后标签的样式
+     * 参数：ele是标签对象，prop是获取的样式属性
+     */
+    function getStyle(ele, prop) {
+        var proValue = null;
+        if(document.defaultView) {
+            // 谷歌等浏览器的样式获取
+            proValue = document.defaultView.getComputedStyle(ele)[prop];
+        } else {
+            // IE低版本下的样式获取
+            proValue = ele.currentStyle[prop];
+        }
+        return proValue;
+    }
+  </script>
+</body>
+</html>
